@@ -23,16 +23,22 @@ class GameOfLife:
         # Скорость протекания игры
         self.speed = speed
 
-
     def draw_grid(self) -> None:
         """ Отрисовать сетку """
         for x in range(0, self.width, self.cell_size):
-            pygame.draw.line(self.screen, pygame.Color('black'),
-                    (x, 0), (x, self.height))
+            pygame.draw.line(
+                self.screen,
+                pygame.Color('black'),
+                (x, 0),
+                (x, self.height)
+                            )
         for y in range(0, self.height, self.cell_size):
-            pygame.draw.line(self.screen, pygame.Color('black'),
-                    (0, y), (self.width, y))
-
+            pygame.draw.line(
+                self.screen,
+                pygame.Color('black'),
+                (0, y),
+                (self.width, y)
+                            )
 
     def run(self) -> None:
         """ Запустить игру """
@@ -60,7 +66,6 @@ class GameOfLife:
             clock.tick(self.speed)
         pygame.quit()
 
-
     def cell_list(self, randomize=True) -> list:
         """ Создание списка клеток.
 
@@ -80,11 +85,10 @@ class GameOfLife:
             self.clist = [[0]*self.cell_width for _ in range(self.cell_height)]
         return self.clist
 
-
     def draw_cell_list(self, clist: list) -> None:
         """ Отображение списка клеток
 
-        :param rects: Список клеток для отрисовки, представленный в виде матрицы
+        :param rects: Список клеток для отрисовки,представленный в виде матрицы
         """
         for i in range(self.cell_height):
             for j in range(self.cell_width):
@@ -93,10 +97,17 @@ class GameOfLife:
                 a = self.cell_size - 1
                 b = self.cell_size - 1
                 if clist[i][j]:
-                    pygame.draw.rect(self.screen, pygame.Color('green'), (x, y, a, b))
+                    pygame.draw.rect(
+                        self.screen,
+                        pygame.Color('green'),
+                        (x, y, a, b)
+                                    )
                 else:
-                    pygame.draw.rect(self.screen, pygame.Color('white'), (x, y, a, b))
-
+                    pygame.draw.rect(
+                        self.screen,
+                        pygame.Color('white'),
+                        (x, y, a, b)
+                                    )
 
     def get_neighbours(self, cell: tuple) -> list:
         """ Вернуть список соседей для указанной ячейки
@@ -108,10 +119,12 @@ class GameOfLife:
         row, col = cell
         a = self.cell_height - 1
         b = self.cell_width - 1
-        neighbours = [self.clist[i][j] for i in range(row - 1, row + 2) for j in range(col - 1, col + 2)
-                      if (0 <= i <= a) and (0 <= j <= b) and (i != row or j != col)]
+        neighbours = [self.clist[i][j] for i in range(
+            row - 1,
+            row + 2
+        ) for j in range(col - 1, col + 2)
+            if (0 <= i <= a) and (0 <= j <= b) and (i != row or j != col)]
         return neighbours
-
 
     def update_cell_list(self, cell_list: list) -> list:
         """ Выполнить один шаг игры.
@@ -135,7 +148,6 @@ class GameOfLife:
                         deepcopy[i][j] = 1
         self.clist = deepcopy
         return self.clist
-
 
 if __name__ == '__main__':
     game = GameOfLife(320, 240, 20)

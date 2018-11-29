@@ -37,11 +37,23 @@ class GameOfLife:
         y = 0
         for cell in cell_list:
             if cell.is_alive():
-                pygame.draw.rect(self.screen, pygame.Color('green'),
-                        [x + 1, y + 1, self.cell_size - 1, self.cell_size - 1])
+                pygame.draw.rect(
+                    self.screen,
+                    pygame.Color('green'), [
+                        x + 1, y + 1,
+                        self.cell_size - 1,
+                        self.cell_size - 1
+                                           ]
+                )
             else:
-                pygame.draw.rect(self.screen, pygame.Color('white'),
-                        [x + 1, y + 1, self.cell_size - 1, self.cell_size - 1])
+                pygame.draw.rect(
+                    self.screen,
+                    pygame.Color('white'), [
+                        x + 1, y + 1,
+                        self.cell_size - 1,
+                        self.cell_size - 1
+                                           ]
+                )
             x += self.cell_size
             if x >= self.width:
                 y += self.cell_size
@@ -89,7 +101,11 @@ class CellList:
             line = []
             for col_number in range(ncols):
                 if randomize:
-                    line.append(Cell(element, col_number, random.randint(0, 1)))
+                    line.append(Cell(
+                                    element,
+                                    col_number,
+                                    random.randint(0, 1))
+                                )
                 else:
                     line.append(Cell(element, col_number, False))
             self.grid.append(line)
@@ -100,7 +116,13 @@ class CellList:
         col, row = cell.col, cell.row
         for i in range(row-1, row + 2):
             for col_number in range(col-1, col + 2):
-                if i in range(0, self.nrows) and col_number in range(0, self.ncols) and (col_number != col or i != row):
+                if i in range(
+                    0,
+                    self.nrows
+                ) and col_number in range(
+                    0,
+                    self.ncols
+                ) and (col_number != col or i != row):
                     neighbours.append(self.grid[i][col_number])
         return neighbours
 
@@ -147,7 +169,11 @@ class CellList:
         grid = [list(row) for row in f.read().split()]
         nrows = len(grid)
         ncols = len(grid[0])
-        grid = [[Cell(y, x, int(grid[y][x])) for x in range(ncols)] for y in range(nrows)]
+        grid = [[Cell(
+            y,
+            x,
+            int(grid[y][x])
+        ) for x in range(ncols)] for y in range(nrows)]
         cell_list = cls(nrows, ncols, False)
         cell_list.grid = grid
         f.close()
