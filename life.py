@@ -1,3 +1,4 @@
+import copy
 import pygame
 from pygame.locals import *
 import random
@@ -22,7 +23,8 @@ class GameOfLife:
         # Скорость протекания игры
         self.speed = speed
 
-    def draw_grid(self):
+
+    def draw_grid(self) -> None:
         """ Отрисовать сетку """
         for x in range(0, self.width, self.cell_size):
             pygame.draw.line(self.screen, pygame.Color('black'),
@@ -31,7 +33,8 @@ class GameOfLife:
             pygame.draw.line(self.screen, pygame.Color('black'),
                     (0, y), (self.width, y))
 
-    def run(self):
+
+    def run(self) -> None:
         """ Запустить игру """
         pygame.init()
         clock = pygame.time.Clock()
@@ -39,7 +42,7 @@ class GameOfLife:
         self.screen.fill(pygame.Color('white'))
 
         # Создание списка клеток
-        # PUT YOUR CODE HERE
+        self.clist = self.cell_list()
 
         running = True
         while running:
@@ -50,13 +53,15 @@ class GameOfLife:
 
             # Отрисовка списка клеток
             # Выполнение одного шага игры (обновление состояния ячеек)
-            # PUT YOUR CODE HERE
+            self.draw_cell_list(self.clist)
+            self.clist = self.update_cell_list(self.clist)
 
             pygame.display.flip()
             clock.tick(self.speed)
         pygame.quit()
 
-    def cell_list(self, randomize=True):
+
+    def cell_list(self, randomize=True) -> list:
         """ Создание списка клеток.
 
         :param randomize: Если True, то создается список клеток, где
@@ -64,27 +69,51 @@ class GameOfLife:
         :return: Список клеток, представленный в виде матрицы
         """
         self.clist = []
-        # PUT YOUR CODE HERE
+        list = []
+        if randomize:
+            for i in range(self.cell_height):
+                for j in range(self.cell_width):
+                    list.append(random.randint(0, 1))
+                self.clist.append(list)
+                list = []
+        else:
+            self.clist = [[0]*self.cell_width for _ in range(self.cell_height)]
         return self.clist
 
-    def draw_cell_list(self, clist):
+
+    def draw_cell_list(self, clist: list) -> None:
         """ Отображение списка клеток
 
         :param rects: Список клеток для отрисовки, представленный в виде матрицы
         """
-        pass
+        for i in range(self.cell_height):
+            for j in range(self.cell_width):
+                x = j * self.cell_size + 1  # отрисовка черной линии по бокам
+                y = i * self.cell_size + 1
+                a = self.cell_size - 1
+                b = self.cell_size - 1
+                if clist[i][j]:
+                    pygame.draw.rect(self.screen, pygame.Color('green'), (x, y, a, b))
+                else:
+                    pygame.draw.rect(self.screen, pygame.Color('white'), (x, y, a, b))
 
-    def get_neighbours(self, cell):
+
+    def get_neighbours(self, cell: tuple) -> list:
         """ Вернуть список соседей для указанной ячейки
 
         :param cell: Позиция ячейки в сетке, задается кортежем вида (row, col)
         :return: Одномерный список ячеек, смежных к ячейке cell
         """
         neighbours = []
-        # PUT YOUR CODE HERE
+        row, col = cell
+        a = self.cell_height - 1
+        b = self.cell_width - 1
+        neighbours = [self.clist[i][j] for i in range(row - 1, row + 2) for j in range(col - 1, col + 2)
+                      if (0 <= i <= a) and (0 <= j <= b) and (i != row or j != col)]
         return neighbours
 
-    def update_cell_list(self, cell_list):
+
+    def update_cell_list(self, cell_list: list) -> list:
         """ Выполнить один шаг игры.
 
         Обновление всех ячеек происходит одновременно. Функция возвращает
@@ -94,5 +123,20 @@ class GameOfLife:
         :return: Обновленное игровое поле
         """
         new_clist = []
-        # PUT YOUR CODE HERE
+        deepcopy = copy.deepcopy(self.clist)
+        for i in range(self.cell_height):
+            for j in range(self.cell_width):
+                neighbours = sum(self.get_neighbours((i, j)))
+                if cell_list[i][j]:
+                    if not 1 < neighbours < 4:
+                        deepcopy[i][j] = 0
+                else:
+                    if neighbours == 3:
+                        deepcopy[i][j] = 1
+        self.clist = deepcopy
         return self.clist
+
+
+if __name__ == '__main__':
+    game = GameOfLife(320, 240, 20)
+    game.run()
